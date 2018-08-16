@@ -19,22 +19,25 @@ io.on('connection', (client) => {
         users.addUser(client.id, data.name, data.room);
 
         client.broadcast.to(data.room).emit('listUsers', users.getUsersByRoom(data.room));
+        client.broadcast.to(data.room).emit('createMessage', createMessage('Admin',  `${ data.name } has joined`));
 
         callback(users.getUsersByRoom(data.room));
     });
 
-    client.on('createMessage', (data) => {
+    client.on('createMessage', (data, callback) => {
         let user = users.getUser(client.id);
 
         let message = createMessage(user.name, data.message);
         client.broadcast.to(user.room).emit('createMessage', message);
+
+        callback(message);
     });
 
     client.on('disconnect', () => {
 
         let userDeleted = users.deleteUser(client.id);
 
-        client.broadcast.to(userDeleted.room).emit('sendMessage', createMessage('Admin',  `${ userDeleted.name } is gone`));
+        client.broadcast.to(userDeleted.room).emit('createMessage', createMessage('Admin',  `${ userDeleted.name } has left`));
         client.broadcast.to(userDeleted.room).emit('listUsers', users.getUsersByRoom(userDeleted.room));
     });
 

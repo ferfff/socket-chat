@@ -15,15 +15,14 @@ socket.on('connect', function() {
     console.log('Conectado al servidor');
 
     socket.emit('enterChat', user, function (resp) {
-        console.log('Users connected', resp);
+        /* console.log('Users connected', resp); */
+        renderUser(resp);
     });
 });
 
 // escuchar
 socket.on('disconnect', function() {
-
     console.log('Perdimos conexión con el servidor');
-
 });
 
 
@@ -36,13 +35,14 @@ socket.on('disconnect', function() {
 // });
 
 // Listen información
-socket.on('createMessage', function(mensaje) {
-    console.log('Server:', mensaje);
+socket.on('createMessage', function(message) {
+    renderMessages(message, false);
+    scrollBottom();
 });
 
 // Listen users list
 socket.on('listUsers', function(users) {
-    console.log(users);
+    renderUser(users);
 });
 
 //Private messages
